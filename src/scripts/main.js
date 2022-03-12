@@ -30,7 +30,6 @@ const submitSearch = (e) => {
 const processTheSearch = async () => {
   // clean the search text before submitted
   const searchTerm = getSearchTerm();
-
   // if empty search "" return
   if (searchTerm === "") return;
   // process the search

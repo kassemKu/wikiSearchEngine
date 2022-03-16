@@ -521,21 +521,22 @@ function hmrAcceptRun(bundle, id) {
 },{}],"3cYfC":[function(require,module,exports) {
 var _searchBarJs = require("./searchBar.js");
 var _dataFunctionsJs = require("./dataFunctions.js");
+var _searchResultBuilder = require("./searchResultBuilder");
 document.addEventListener("readystatechange", function(event) {
     if (event.target.readyState === "complete") initApp();
 });
 function initApp() {
-    // set focus
+    // set focus DONE
     _searchBarJs.setSearchFocus();
     // get searchbar element
     const form = document.getElementById("ws-searchbar");
-    // listeners
+    //TODO:: listeners
     form.addEventListener("submit", submitSearch);
 }
 const submitSearch = (e)=>{
     // ignore the default prevent (refresh page)
     e.preventDefault();
-    // delete search result
+    // TODO:: delete search result
     // process the search
     processTheSearch();
     // set focus
@@ -549,9 +550,10 @@ const processTheSearch = async ()=>{
     if (searchTerm === "") return;
     // process the search
     const resultArray = await _dataFunctionsJs.retrieveSearchResults(searchTerm);
+    if (resultArray.length) _searchResultBuilder.searchResultBuilder(resultArray);
 };
 
-},{"./searchBar.js":"imHFf","./dataFunctions.js":"jd5GP"}],"imHFf":[function(require,module,exports) {
+},{"./searchBar.js":"imHFf","./dataFunctions.js":"jd5GP","./searchResultBuilder":"eVnve"}],"imHFf":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "setSearchFocus", ()=>setSearchFocus
@@ -607,7 +609,10 @@ const getSearchTerm = ()=>{
 const retrieveSearchResults = async (searchTerm)=>{
     const wikiSearchString = getWikiSearchString(searchTerm);
     const wikiSearchResults = await requestData(wikiSearchString);
-    console.log(wikiSearchResults);
+    let resultArray = [];
+    if (wikiSearchResults.hasOwnProperty("query")) resultArray = processWikiResults(wikiSearchResults.query.pages);
+    console.log(resultArray);
+    return resultArray;
 };
 const getWikiSearchString = (searchTerm)=>{
     const maxChars = getMaxChars();
@@ -643,6 +648,32 @@ const requestData = async (searchString)=>{
     } catch (err) {
         console.error(err);
     }
+};
+const processWikiResults = (resultPages)=>{
+    const resultArray = [];
+    Object.keys(resultPages).forEach((key)=>{
+        const id = key;
+        const title = resultPages[key].title;
+        const text = resultPages[key].extract;
+        const img = resultPages[key].hasOwnProperty("thumbnail") ? resultPages[key].thumbnail.source : null;
+        const item = {
+            id: id,
+            title: title,
+            img: img,
+            text: text
+        };
+        resultArray.push(item);
+    });
+    return resultArray;
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eVnve":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "searchResultBuilder", ()=>searchResultBuilder
+);
+const searchResultBuilder = (result)=>{
+    const parentElement = document.querySelector(".ws-content");
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["d3wGw","3cYfC"], "3cYfC", "parcelRequirebbb8")

@@ -1,5 +1,6 @@
 import { setSearchFocus } from "./searchBar.js";
 import { getSearchTerm, retrieveSearchResults } from "./dataFunctions.js";
+import { searchResultBuilder } from "./searchResultBuilder";
 
 document.addEventListener("readystatechange", function (event) {
   if (event.target.readyState === "complete") {
@@ -8,18 +9,18 @@ document.addEventListener("readystatechange", function (event) {
 });
 
 function initApp() {
-  // set focus
+  // set focus DONE
   setSearchFocus();
   // get searchbar element
   const form = document.getElementById("ws-searchbar");
-  // listeners
+  //TODO:: listeners
   form.addEventListener("submit", submitSearch);
 }
 
 const submitSearch = (e) => {
   // ignore the default prevent (refresh page)
   e.preventDefault();
-  // delete search result
+  // TODO:: delete search result
   // process the search
   processTheSearch();
   // set focus
@@ -34,4 +35,5 @@ const processTheSearch = async () => {
   if (searchTerm === "") return;
   // process the search
   const resultArray = await retrieveSearchResults(searchTerm);
+  if (resultArray.length) searchResultBuilder(resultArray);
 };

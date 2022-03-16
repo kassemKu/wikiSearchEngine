@@ -12,7 +12,12 @@ export const getSearchTerm = () => {
 export const retrieveSearchResults = async (searchTerm) => {
   const wikiSearchString = getWikiSearchString(searchTerm);
   const wikiSearchResults = await requestData(wikiSearchString);
-  console.log(wikiSearchResults);
+  let resultArray = [];
+  if (wikiSearchResults.hasOwnProperty("query")) {
+    resultArray = processWikiResults(wikiSearchResults.query.pages);
+  }
+  console.log(resultArray);
+  return resultArray;
 };
 
 const getWikiSearchString = (searchTerm) => {
@@ -52,4 +57,24 @@ const requestData = async (searchString) => {
   } catch (err) {
     console.error(err);
   }
+};
+
+const processWikiResults = (resultPages) => {
+  const resultArray = [];
+  Object.keys(resultPages).forEach((key) => {
+    const id = key;
+    const title = resultPages[key].title;
+    const text = resultPages[key].extract;
+    const img = resultPages[key].hasOwnProperty("thumbnail")
+      ? resultPages[key].thumbnail.source
+      : null;
+    const item = {
+      id: id,
+      title: title,
+      img: img,
+      text: text,
+    };
+    resultArray.push(item);
+  });
+  return resultArray;
 };
